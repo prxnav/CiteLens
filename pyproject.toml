@@ -1,0 +1,26 @@
+[project]
+name = "citelens"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "pymupdf>=1.28.2",
+]
+
+[dependency-groups]
+dev = [
+    "mypy>=2.4.0",
+    "pytest>=9.1.1",
+    "ruff>=0.17.1",
+]
+
+[tool.mypy]
+strict = true
+
+[[tool.mypy.overrides]]
+# pymupdf ships a py.typed marker but its C-extension methods aren't
+# actually annotated, so strict mode's disallow_untyped_calls fires on
+# every call into it. Relaxed only for this one boundary module.
+module = "citelens.pdf"
+disallow_untyped_calls = false
