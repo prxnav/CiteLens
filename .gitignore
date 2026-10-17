@@ -34,3 +34,7 @@ Thumbs.db
 
 #reference
 roadmap.html
+notes/
+
+# Sample papers for local testing (large, and not ours to redistribute)
+papers/
