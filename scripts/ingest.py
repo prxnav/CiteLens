@@ -19,11 +19,14 @@ from citelens.parser import parse_pdf
 
 
 async def ingest(path: Path, arxiv: ArxivClient) -> Paper:
+    arxiv_id = path.stem
+    data = path.read_bytes()
     # parse_pdf is ordinary blocking code, so it runs in a worker thread.
     # Calling it directly here would freeze the event loop, so nothing else
     # (e.g. the arXiv request) could make progress until parsing finished.
     paper, metadata = await asyncio.gather(
-        asyncio.to_thread(parse_pdf, path), arxiv.fetch(path.stem)
+        asyncio.to_thread(parse_pdf, data, fallback_title=arxiv_id, arxiv_id=arxiv_id),
+        arxiv.fetch(arxiv_id),
     )
     return apply_metadata(paper, metadata)
 

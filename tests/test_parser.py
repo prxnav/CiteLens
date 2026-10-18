@@ -123,8 +123,7 @@ BERT = Path(__file__).parent.parent / "papers" / "1810.04805.pdf"
 
 @pytest.mark.skipif(not BERT.exists(), reason="sample paper not downloaded")
 def test_real_paper_bert() -> None:
-    paper = parse_pdf(BERT)
+    paper = parse_pdf(BERT.read_bytes(), fallback_title="unused", arxiv_id="1810.04805")
     assert paper.title.startswith("BERT: Pre-training")
-    assert paper.arxiv_id == "1810.04805"
     assert "3.1 Pre-training BERT" in [section.title for section in paper.sections]
     assert len(paper.references) > 50

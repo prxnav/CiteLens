@@ -9,9 +9,8 @@ from __future__ import annotations
 import re
 from collections import Counter
 from dataclasses import dataclass
-from pathlib import Path
 
-from citelens.models import Chunk, Paper, Reference, Section, is_arxiv_id
+from citelens.models import Chunk, Paper, Reference, Section
 from citelens.pdf import TextBlock, iter_pages, iter_text_blocks, join_lines, open_pdf
 
 # "1 Introduction", "3.1 Pre-training BERT", "3.1. Residual Learning", "A Appendix Title"
@@ -42,12 +41,13 @@ class _DraftChunk:
     text: str
 
 
-def parse_pdf(path: Path) -> Paper:
-    """Parse a PDF file into a Paper. Files named like ``1810.04805.pdf`` get that arXiv ID."""
-    with open_pdf(path) as doc:
+def parse_pdf(
+    data: bytes, *, fallback_title: str, arxiv_id: str | None = None
+) -> Paper:
+    """Parse a PDF's bytes into a Paper. Bytes carry no file name, so the caller names it."""
+    with open_pdf(data) as doc:
         blocks = list(iter_text_blocks(iter_pages(doc)))
-    arxiv_id = path.stem if is_arxiv_id(path.stem) else None
-    return build_paper(blocks, fallback_title=path.stem, arxiv_id=arxiv_id)
+    return build_paper(blocks, fallback_title=fallback_title, arxiv_id=arxiv_id)
 
 
 def build_paper(

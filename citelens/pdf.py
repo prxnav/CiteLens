@@ -5,7 +5,6 @@ from __future__ import annotations
 from collections.abc import Iterable, Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass
-from pathlib import Path
 
 import pymupdf
 
@@ -27,9 +26,12 @@ class TextBlock:
 
 
 @contextmanager
-def open_pdf(path: Path) -> Iterator[pymupdf.Document]:
-    """Open a PDF and guarantee it closes, even if parsing raises partway through."""
-    doc = pymupdf.open(path)
+def open_pdf(data: bytes) -> Iterator[pymupdf.Document]:
+    """Open a PDF held in memory and guarantee it closes, even if parsing raises partway through.
+
+    Bytes, not a path, so it works the same whether the PDF came from disk, an upload or S3.
+    """
+    doc = pymupdf.open(stream=data, filetype="pdf")
     try:
         yield doc
     finally:
